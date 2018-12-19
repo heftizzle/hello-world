@@ -16,7 +16,7 @@ retriever: modernSCM(
   [
     $class: "GitSCMSource",
     remote: "ssh://git@bitbucketdev.ca.bestbuy.com:7999/devops/openshift-pipeline-library.git",
-    credentialsId: "${NAMESPACE}-devops-pipeline-library-ssh-key"
+    credentialsId: "${NAMESPACE}-devops-pipeline-library"
   ]
 )
 
