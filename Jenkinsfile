@@ -113,7 +113,7 @@ pipeline {
       }
     }
 
-    stage('Promote from TEST to Stage') {
+    stage('Promote from Test to Stage') {
       steps {
         tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.TEST, toImagePath: env.STAGE)
       }
