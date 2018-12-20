@@ -5,7 +5,7 @@ openshift.withCluster() {
   env.BUILD = "${env.NAMESPACE}"
   def PROJECT_BASE = "${env.NAMESPACE}".replaceAll(/-build/, '')
   env.CI = "${PROJECT_BASE}-ci"
-  env.STAGE = "${PROJECT_BASE}-test"
+  env.TEST = "${PROJECT_BASE}-test"
   env.PROD = "${PROJECT_BASE}-stage"
   echo "Starting Pipeline for ${APP_NAME}..."
 }
@@ -95,13 +95,13 @@ pipeline {
 
     stage('Promote from CI to Test') {
       steps {
-        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.CI, toImagePath: env.STAGE)
+        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.CI, toImagePath: env.TEST)
       }
     }
 
     stage ('Verify Deployment to Test') {
       steps {
-        verifyDeployment(projectName: env.STAGE, targetApp: env.APP_NAME)
+        verifyDeployment(projectName: env.TEST, targetApp: env.APP_NAME)
       }
     }
 
@@ -113,15 +113,15 @@ pipeline {
       }
     }
 
-    stage('Promote from Stage to Stage') {
+    stage('Promote from TEST to Stage') {
       steps {
-        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.STAGE, toImagePath: env.PROD)
+        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.TEST, toImagePath: env.STAGE)
       }
     }
 
     stage ('Verify Deployment to Stage') {
       steps {
-        verifyDeployment(projectName: env.PROD, targetApp: env.APP_NAME)
+        verifyDeployment(projectName: env.STAGE, targetApp: env.APP_NAME)
       }
     }
   }
