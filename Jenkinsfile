@@ -4,9 +4,9 @@ openshift.withCluster() {
   env.APP_NAME = "${JOB_NAME}".replaceAll(/${NAMESPACE}-*/, '').replaceAll(/-?pipeline-?/,'')
   env.BUILD = "${env.NAMESPACE}"
   def PROJECT_BASE = "${env.NAMESPACE}".replaceAll(/-build/, '')
-  env.DEV = "${PROJECT_BASE}-dev"
-  env.STAGE = "${PROJECT_BASE}-stage"
-  env.PROD = "${PROJECT_BASE}-prod"
+  env.CI = "${PROJECT_BASE}-ci"
+  env.STAGE = "${PROJECT_BASE}-test"
+  env.PROD = "${PROJECT_BASE}-stage"
   echo "Starting Pipeline for ${APP_NAME}..."
 }
 
@@ -81,25 +81,25 @@ pipeline {
       }
     }
 
-    stage('Promote from Build to Dev') {
+    stage('Promote from Build to CI') {
       steps {
-        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.BUILD, toImagePath: env.DEV)
+        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.BUILD, toImagePath: env.CI)
       }
     }
 
-    stage ('Verify Deployment to Dev') {
+    stage ('Verify Deployment to CI') {
       steps {
-        verifyDeployment(projectName: env.DEV, targetApp: env.APP_NAME)
+        verifyDeployment(projectName: env.CI, targetApp: env.APP_NAME)
       }
     }
 
-    stage('Promote from Dev to Stage') {
+    stage('Promote from CI to Test') {
       steps {
-        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.DEV, toImagePath: env.STAGE)
+        tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.CI, toImagePath: env.STAGE)
       }
     }
 
-    stage ('Verify Deployment to Stage') {
+    stage ('Verify Deployment to Test') {
       steps {
         verifyDeployment(projectName: env.STAGE, targetApp: env.APP_NAME)
       }
@@ -108,18 +108,18 @@ pipeline {
     stage('Promotion gate') {
       steps {
         script {
-          input message: 'Promote application to Production?'
+          input message: 'Promote application to Staging in Production?'
         }
       }
     }
 
-    stage('Promote from Stage to Prod') {
+    stage('Promote from Stage to Stage') {
       steps {
         tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.STAGE, toImagePath: env.PROD)
       }
     }
 
-    stage ('Verify Deployment to Prod') {
+    stage ('Verify Deployment to Stage') {
       steps {
         verifyDeployment(projectName: env.PROD, targetApp: env.APP_NAME)
       }
