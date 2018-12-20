@@ -6,7 +6,7 @@ openshift.withCluster() {
   def PROJECT_BASE = "${env.NAMESPACE}".replaceAll(/-build/, '')
   env.CI = "${PROJECT_BASE}-ci"
   env.TEST = "${PROJECT_BASE}-test"
-  env.PROD = "${PROJECT_BASE}-stage"
+  env.STAGE = "${PROJECT_BASE}-stage"
   echo "Starting Pipeline for ${APP_NAME}..."
 }
 
