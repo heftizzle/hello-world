@@ -1,0 +1,4 @@
+APPLICATION_NAME=devops-hello-service
+NAMESPACE=ecomm-devops-service-ci
+SA_NAME=jenkins
+SA_NAMESPACE=ecomm-devops-service-build

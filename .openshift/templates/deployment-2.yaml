@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: deployment
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    generation: 6
+    labels:
+      app: devops-hello-service
+    name: devops-hello-service
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: 172.32.109.204:5000/ecomm-devops-service-dev/devops-hello-service:latest
+      generation: 6
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: devops-hello-service
+    name: devops-hello-service
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deployment-config.name: devops-hello-service
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deployment-config.name: devops-hello-service
+      spec:
+        containers:
+        - image: 172.32.109.204:5000/ecomm-devops-service-dev/devops-hello-service@sha256:37d7e6775cde76b1ccb0b68060512ff9cd5b77f27e9bc177c8528b927b814862
+          imagePullPolicy: Always
+          name: default-container
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - default-container
+        from:
+          kind: ImageStreamTag
+          name: devops-hello-service:latest
+          namespace: ecomm-devops-service-dev
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: devops-hello-service
+    name: devops-hello-service
+  spec:
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deployment-config.name: devops-hello-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: devops-hello-service
+    name: devops-hello-service
+  spec:
+    host: devops-hello-service-ecomm-devops-service-dev.dev-ocp.ca.bestbuy.com
+    to:
+      kind: Service
+      name: devops-hello-service
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-12-19T21:05:57Z
+        status: "True"
+        type: Admitted
+      host: devops-hello-service-ecomm-devops-service-dev.dev-ocp.ca.bestbuy.com
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: devops-hello-service
+    name: jenkins_edit
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: ecomm-devops-service-build
+  userNames:
+  - system:serviceaccount:ecomm-devops-service-build:jenkins
