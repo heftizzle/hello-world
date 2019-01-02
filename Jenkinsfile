@@ -60,6 +60,14 @@ pipeline {
         sh "mvn test -f ${POM_FILE}"
       }
     }
+    
+    
+    // Run Maven unit tests
+    stage('Sonar Code Analysis'){
+      steps {
+        sh "mvn -f ${POM_FILE} org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar -Dsonar.host.url=http://dtl24vapsqb02.ca.bestbuy.com:9000 -Dsonar.login=1480c9bce2517ad5852c61b62cd4200dd8fc66d1"
+      }
+    }
 
     // Build Container Image using the artifacts produced in previous stages
     stage('Build Container Image'){
