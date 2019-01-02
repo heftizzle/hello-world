@@ -104,6 +104,12 @@ pipeline {
         tagImage(sourceImageName: env.APP_NAME, sourceImagePath: env.CI, toImagePath: env.TEST)
       }
     }
+    
+    stage('Deploy to Test') {
+      steps {
+        rolloutDeployment(projectName: env.TEST, targetApp: env.APP_NAME)
+      }
+    }
 
     stage ('Verify Deployment to Test') {
       steps {
