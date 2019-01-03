@@ -57,7 +57,7 @@ pipeline {
     // Run Dependency Scan for packages
     stage('EIP Dependency Scan'){
       steps {
-        dependencyPkgsAnalysis(pathToApp: env.POM_FILE)
+        dependencyPkgsAnalysis()
       }
     }
 
