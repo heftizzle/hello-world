@@ -53,6 +53,13 @@ pipeline {
         sh "mvn clean install -DskipTests=true -f ${POM_FILE}"
       }
     }
+    
+    // Run Dependency Scan for packages
+    stage('EIP Dependency Scan'){
+      steps {
+        dependencyPkgsAnalysis()
+      }
+    }
 
     // Run Maven unit tests
     stage('Unit Test'){
@@ -62,7 +69,7 @@ pipeline {
     }
     
     
-    // Run Maven unit tests
+    // Run Static Code Analysis using sonar
     stage('Sonar Code Analysis'){
       steps {
         sonarStaticCodeAnalysis(pomFile: "${POM_FILE}")
