@@ -23,7 +23,7 @@
         <springboot.version>1.5.9.RELEASE</springboot.version>
         <springboot.metrics.version>0.5.1.RELEASE</springboot.metrics.version>
         <prometheus.client.version>0.1.0</prometheus.client.version>
-        <springfox-version>2.8.0</springfox-version>
+        <springfox-version>2.10.0</springfox-version>
         <swagger-core-version>1.5.10</swagger-core-version>
     </properties>
 
